@@ -1,8 +1,22 @@
 import { app, Menu } from "electron";
+import path from "node:path";
 
 const isMac = process.platform === "darwin";
 
-export function createMenu(menuHandler) {
+export function createMenu(menuHandler, recentFiles = []) {
+  let recentItems;
+  if (recentFiles.length === 0) {
+    recentItems = [{ key: "null", label: "No Recent Projects", enabled: false }];
+  } else {
+    recentItems = recentFiles.map((filePath) => ({
+      key: filePath,
+      label: path.basename(filePath),
+      click: () => menuHandler("openRecent", filePath),
+    }));
+    recentItems.push({ type: "separator" });
+    recentItems.push({ label: "Clear Recent Projects", click: () => menuHandler("clearRecent") });
+  }
+
   const template = [
     ...(isMac
       ? [
@@ -29,6 +43,11 @@ export function createMenu(menuHandler) {
         { label: "New Project", accelerator: "CmdOrCtrl+N", click: () => menuHandler("new") },
         { type: "separator" },
         { label: "Open Project…", accelerator: "CmdOrCtrl+O", click: () => menuHandler("open") },
+        {
+          key: "recentProjects",
+          label: "Open Recent",
+          submenu: recentItems,
+        },
         { type: "separator" },
         { label: "Save", accelerator: "CmdOrCtrl+S", click: () => menuHandler("save") },
         {

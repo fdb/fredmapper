@@ -7,6 +7,7 @@ import { createMenu } from "./menu.js";
 
 let mainWindow;
 let projectFile;
+let projectWatcher;
 
 function createWindow() {
   const __filename = fileURLToPath(import.meta.url);
@@ -23,14 +24,14 @@ function createWindow() {
 
   mainWindow.loadFile("browser/index.html");
   mainWindow.on("ready-to-show", () => {
-    console.log("ready");
     handleDefaultProject();
   });
 }
 
 app.whenReady().then(() => {
   createWindow();
-  createMenu(handleMenu);
+  const recentFiles = readRecentFiles();
+  createMenu(handleMenu, recentFiles);
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -50,10 +51,16 @@ function sendIpcMessage(channel, ...args) {
   mainWindow.webContents.send(channel, ...args);
 }
 
-function handleMenu(name) {
+function handleMenu(name, filePath) {
   console.log("Menu selected:", name);
   if (name === "open") {
     handleOpenProject();
+  } else if (name === "openRecent") {
+    _loadProject(filePath);
+    _watchProject(filePath);
+    addRecentFile(filePath);
+  } else if (name === "clearRecent") {
+    clearRecentFiles();
   }
 }
 
@@ -66,11 +73,9 @@ function handleOpenProject() {
   if (!files || files.length !== 1) return;
   const filePath = files[0];
   projectFile = filePath;
-  const fileContent = fs.readFileSync(filePath, "utf-8");
-  const project = JSON.parse(fileContent);
-  const projectDir = path.dirname(filePath);
-  const projectURL = pathToFileURL(projectDir).toString();
-  sendIpcMessage("project-open", { project, projectURL });
+  _loadProject(filePath);
+  _watchProject(filePath);
+  addRecentFile(filePath);
 }
 
 function handleSaveProject(project) {
@@ -96,9 +101,70 @@ function handleDefaultProject() {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
   const filePath = path.join(__dirname, "projects/default/default.fredmap");
+  _loadProject(filePath);
+  _watchProject(filePath);
+}
+
+function _loadProject(filePath) {
   const fileContent = fs.readFileSync(filePath, "utf-8");
   const project = JSON.parse(fileContent);
   const projectDir = path.dirname(filePath);
   const projectURL = pathToFileURL(projectDir).toString();
   sendIpcMessage("project-open", { project, projectURL });
+}
+
+function _watchProject(filePath) {
+  if (projectWatcher) {
+    projectWatcher.close();
+  }
+  projectWatcher = fs.watch(filePath, (eventType) => {
+    if (eventType === "change") {
+      console.log(`File ${filePath} has been modified, reloading...`);
+      _loadProject(filePath); // Reload the file when it changes
+    }
+  });
+}
+
+const settingsPath = path.join(app.getPath("userData"), "settings.json");
+
+function readSettings() {
+  let settings;
+  try {
+    settings = JSON.parse(fs.readFileSync(settingsPath, "utf-8"));
+  } catch (error) {
+    console.log(error);
+    settings = { recentFiles: [] };
+  }
+  return settings;
+}
+
+function saveSettings(settings) {
+  fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
+}
+
+function readRecentFiles() {
+  const settings = readSettings();
+  return settings.recentFiles || [];
+}
+
+function saveRecentFiles(recentFiles) {
+  const settings = readSettings();
+  settings.recentFiles = recentFiles;
+  saveSettings(settings);
+}
+
+function addRecentFile(filePath) {
+  filePath = path.resolve(filePath);
+  let recentFiles = readRecentFiles();
+  // Filter out the file path if it's already in there
+  recentFiles = recentFiles.filter((file) => file !== filePath);
+  // Add the file path to the beginning of the array
+  recentFiles.unshift(filePath);
+  // Only keep the first 10 files
+  recentFiles = recentFiles.slice(0, 10);
+  saveRecentFiles(recentFiles);
+}
+
+function clearRecentFiles() {
+  saveRecentFiles([]);
 }

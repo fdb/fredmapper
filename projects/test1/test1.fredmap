@@ -1,0 +1,65 @@
+{
+  "formatVersion": 1,
+  "scenes": [
+    {
+      "name": "Scene 1",
+      "description": "A simple scene with an image and video",
+      "objects": [
+        {
+          "type": "image",
+          "path": "checkerboard.png",
+          "position": [0.0, 0.0],
+          "scale": [0.5, 0.5]
+        },
+        {
+          "type": "image",
+          "path": "checkerboard.png",
+          "position": [0.5, 0.0],
+          "scale": [0.5, 0.5]
+        },
+        {
+          "type": "image",
+          "path": "checkerboard.png",
+          "position": [1.0, 0.0],
+          "scale": [0.5, 0.5]
+        },
+        {
+          "type": "image",
+          "path": "checkerboard.png",
+          "position": [0.0, 0.5],
+          "scale": [0.5, 0.5]
+        },
+        {
+          "type": "image",
+          "path": "checkerboard.png",
+          "position": [0.5, 0.5],
+          "scale": [0.5, 0.5]
+        },
+        {
+          "type": "image",
+          "path": "checkerboard.png",
+          "position": [1.0, 0.5],
+          "scale": [0.5, 0.5]
+        },
+        {
+          "type": "image",
+          "path": "checkerboard.png",
+          "position": [0.0, 1.0],
+          "scale": [0.5, 0.5]
+        },
+        {
+          "type": "image",
+          "path": "checkerboard.png",
+          "position": [0.5, 1.0],
+          "scale": [0.5, 0.5]
+        },
+        {
+          "type": "image",
+          "path": "checkerboard.png",
+          "position": [1.0, 1.0],
+          "scale": [0.5, 0.5]
+        }
+      ]
+    }
+  ]
+}

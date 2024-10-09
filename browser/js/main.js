@@ -1,6 +1,6 @@
 import { html, render, useEffect, useState } from "./preact_standalone.module.js";
 
-function SceneObject({ projectId, scene, object }) {
+function SceneObject({ projectURL, scene, object }) {
   let style = `transform: translate(-50%, -50%) scale(${object.scale[0]}, ${object.scale[1]});`;
   if (object.feather) {
     const featherAmount = 100 - object.feather * 100;
@@ -8,9 +8,9 @@ function SceneObject({ projectId, scene, object }) {
   }
   let element;
   if (object.type === "image") {
-    element = html`<img src="./projects/${projectId}/${object.path}" style=${style} />`;
+    element = html`<img src="${projectURL}/${object.path}" style=${style} />`;
   } else if (object.type === "video") {
-    element = html`<video src="./projects/${projectId}/${object.path}" style=${style} autoplay muted />`;
+    element = html`<video src="${projectURL}/${object.path}" style=${style} autoplay muted />`;
   }
   return html`<div
     class="scene-object scene-${object.type}"
@@ -22,10 +22,10 @@ function SceneObject({ projectId, scene, object }) {
   </div>`;
 }
 
-function Viewer({ projectId, scene }) {
+function Viewer({ projectURL, scene }) {
   return html`<div class="viewer">
     <div class="scene">
-      ${scene.objects.map((o) => html`<${SceneObject} projectId=${projectId} scene=${scene} object=${o} />`)}
+      ${scene.objects.map((o) => html`<${SceneObject} projectURL=${projectURL} scene=${scene} object=${o} />`)}
     </div>
   </div>`;
 }
@@ -37,30 +37,20 @@ function TestImage() {
 function App() {
   const [fullscreen, setFullscreen] = useState(false);
   const [testImage, setTestImage] = useState(false);
-  const [projectId, setProjectId] = useState(null);
+  const [projectURL, setProjectURL] = useState(null);
   const [project, setProject] = useState(null);
 
   useEffect(() => {
-    const url = new URL(window.location.href);
-    const params = new URLSearchParams(url.search);
-    const projectId = params.get("projectId") || "default";
-    setProjectId(projectId);
     window.addEventListener("keydown", handleKeyDown);
+    window.electronAPI.onProjectOpened(({ project, projectURL }) => {
+      setProject(project);
+      setProjectURL(projectURL);
+      console.log("project opened", { project, projectURL });
+    });
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
-
-  useEffect(() => {
-    fetchProject();
-  }, [projectId]);
-
-  async function fetchProject() {
-    if (!projectId) return;
-    const response = await fetch(`./projects/${projectId}/project.json`);
-    const data = await response.json();
-    setProject(data);
-  }
 
   function handleKeyDown(e) {
     if (e.key === "f") {
@@ -79,7 +69,7 @@ function App() {
     return html`<div class="app"><${TestImage} /></div>`;
   }
 
-  return html`<div class="app"><${Viewer} projectId=${projectId} scene=${project.scenes[0]} /></div>`;
+  return html`<div class="app"><${Viewer} projectURL=${projectURL} scene=${project.scenes[0]} /></div>`;
 }
 
 render(html`<${App} />`, document.getElementById("root"));

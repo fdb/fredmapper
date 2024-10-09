@@ -93,7 +93,9 @@ function handleSaveProjectAs(project) {
 }
 
 function handleDefaultProject() {
-  const filePath = "projects/default/default.fredmap";
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  const filePath = path.join(__dirname, "projects/default/default.fredmap");
   const fileContent = fs.readFileSync(filePath, "utf-8");
   const project = JSON.parse(fileContent);
   const projectDir = path.dirname(filePath);

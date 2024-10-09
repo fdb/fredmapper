@@ -1,0 +1,94 @@
+:root {
+  --font-family-base: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
+  --sidebar-width: 250px;
+  --zinc-100: #f4f4f5;
+  --zinc-200: #e4e4e7;
+  --zinc-300: #d4d4d8;
+  --zinc-400: #a1a1aa;
+  --zinc-500: #71717a;
+  --zinc-600: #52525b;
+  --zinc-700: #3f3f46;
+  --zinc-800: #27272a;
+  --zinc-900: #18181b;
+}
+*,
+::before,
+::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  overflow: hidden;
+  font-size: 16px;
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  min-width: 320px;
+  line-height: 24px;
+  font-family: var(--font-family-base);
+  font-weight: 400;
+  color: var(--zinc-100);
+  background-color: var(--zinc-800);
+  font-synthesis: style;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.loading {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  color: var(--zinc-400);
+  font-size: 1.5rem;
+}
+
+.app {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.viewer {
+  display: flex;
+  flex: 1;
+  background-color: red;
+}
+
+.scene {
+  flex: 1;
+  background-color: black;
+}
+
+.scene {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+.scene-object {
+  position: absolute;
+}
+
+.scene-object img,
+.scene-object video {
+  /* transform: translate(-50%, -50%); */
+}
+
+.test-image {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: black url(../img/checkerboard.png);
+}

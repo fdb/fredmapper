@@ -1,0 +1,31 @@
+{
+  "formatVersion": 1,
+  "scenes": [
+    {
+      "name": "Scene 1",
+      "description": "A simple scene with an image and video",
+      "objects": [
+        {
+          "type": "image",
+          "path": "checkerboard.png",
+          "position": [0.2, 0.3],
+          "scale": [1, 1]
+        },
+        {
+          "type": "video",
+          "path": "walk.webm",
+          "position": [0.5, 0.5],
+          "scale": [0.5, 0.5],
+          "feather": 0.3
+        },
+        {
+          "type": "video",
+          "path": "walk.webm",
+          "position": [0.8, 0.8],
+          "scale": [0.2, 0.2],
+          "feather": 0.3
+        }
+      ]
+    }
+  ]
+}

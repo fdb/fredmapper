@@ -1,4 +1,4 @@
-import { html, render, useEffect, useState } from "/js/preact_standalone.module.js";
+import { html, render, useEffect, useState } from "./preact_standalone.module.js";
 
 function SceneObject({ projectId, scene, object }) {
   let style = `transform: translate(-50%, -50%) scale(${object.scale[0]}, ${object.scale[1]});`;
@@ -8,9 +8,9 @@ function SceneObject({ projectId, scene, object }) {
   }
   let element;
   if (object.type === "image") {
-    element = html`<img src="/projects/${projectId}/${object.path}" style=${style} />`;
+    element = html`<img src="./projects/${projectId}/${object.path}" style=${style} />`;
   } else if (object.type === "video") {
-    element = html`<video src="/projects/${projectId}/${object.path}" style=${style} autoplay muted />`;
+    element = html`<video src="./projects/${projectId}/${object.path}" style=${style} autoplay muted />`;
   }
   return html`<div
     class="scene-object scene-${object.type}"
@@ -57,7 +57,7 @@ function App() {
 
   async function fetchProject() {
     if (!projectId) return;
-    const response = await fetch(`/projects/${projectId}/project.json`);
+    const response = await fetch(`./projects/${projectId}/project.json`);
     const data = await response.json();
     setProject(data);
   }

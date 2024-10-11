@@ -38,9 +38,17 @@ function SceneObject({ projectURL, targetSize, object, showBounds }) {
       style="
         width: 100%;
         height: 100%;
-        background:  red; 
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: white;
+        color: black;
+        text-shadow: 1px 1px 1px white; 
+        font-size: calc(${width}px * 0.2);
       "
-    />`;
+    >
+      ${object.label}
+    </div>`;
   } else if (object.type === "image") {
     element = html`<img src="${projectURL}/${object.path}" style="width: 100%; height: 100%; object-fit: cover;" />`;
   } else if (object.type === "video") {

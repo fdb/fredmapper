@@ -117,6 +117,7 @@ function _watchProject(filePath) {
   if (projectWatcher) {
     projectWatcher.close();
   }
+  if (filePath.includes(".asar")) return;
   projectWatcher = fs.watch(filePath, (eventType) => {
     if (eventType === "change") {
       console.log(`File ${filePath} has been modified, reloading...`);

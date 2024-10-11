@@ -3,31 +3,25 @@
   "scenes": [
     {
       "name": "Scene 1",
-      "description": "A simple scene with an image and video",
-      "targetSize": [1920, 1080],
+      "description": "A simple scene with the instructions",
+      "targetSize": [1920, 1200],
       "objects": [
-        {
+          {
+            "label": "drone",  
+            "type": "video",
+            "path": "drone-top-down.mp4",
+            "position": [480, 600],
+            "width": 1500,
+            "scale": [1, 1],
+            "feather": 0.3
+          },
+          {
+          "label": "instruct", 
           "type": "image",
-          "path": "checkerboard.png",
-          "position": [125, 125],
-          "width": 250,
+          "path": "instructions.png",
+          "position": [1440, 600],
+          "width": 512,
           "scale": [1, 1]
-        },
-        {
-          "type": "video",
-          "path": "walk.webm",
-          "position": [960, 540],
-          "width": 500,
-          "scale": [1, 1],
-          "feather": 0.3
-        },
-        {
-          "type": "video",
-          "path": "walk.webm",
-          "position": [1795, 955],
-          "width": 250,
-          "scale": [1, 1],
-          "feather": 0.3
         }
       ]
     }

@@ -57,30 +57,29 @@ body {
 }
 
 .viewer {
-  display: flex;
-  flex: 1;
-  background-color: red;
-}
-
-.scene {
-  flex: 1;
-  background-color: black;
-}
-
-.scene {
-  position: fixed;
-  top: 0;
-  left: 0;
   width: 100vw;
   height: 100vh;
+  position: relative;
+  background-color: #222;
+}
+
+.scene {
+  position: absolute;
+  overflow: hidden;
+  transform-origin: top left;
+  background-color: black;
 }
 
 .scene-object {
   position: absolute;
+  transform-origin: center;
 }
 
 .scene-object img,
 .scene-object video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   /* transform: translate(-50%, -50%); */
 }
 

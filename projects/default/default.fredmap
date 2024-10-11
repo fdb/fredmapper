@@ -4,25 +4,29 @@
     {
       "name": "Scene 1",
       "description": "A simple scene with an image and video",
+      "targetSize": [1920, 1080],
       "objects": [
         {
           "type": "image",
           "path": "checkerboard.png",
-          "position": [0.2, 0.3],
+          "position": [125, 125],
+          "width": 250,
           "scale": [1, 1]
         },
         {
           "type": "video",
           "path": "walk.webm",
-          "position": [0.5, 0.5],
-          "scale": [0.5, 0.5],
+          "position": [960, 540],
+          "width": 500,
+          "scale": [1, 1],
           "feather": 0.3
         },
         {
           "type": "video",
           "path": "walk.webm",
-          "position": [0.8, 0.8],
-          "scale": [0.2, 0.2],
+          "position": [1795, 955],
+          "width": 250,
+          "scale": [1, 1],
           "feather": 0.3
         }
       ]

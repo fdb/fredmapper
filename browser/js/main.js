@@ -1,37 +1,106 @@
 import { html, render, useEffect, useState } from "./preact_standalone.module.js";
 
-function SceneObject({ projectURL, scene, object }) {
-  let style = `transform: translate(-50%, -50%) scale(${object.scale[0]}, ${object.scale[1]});`;
+function SceneObject({ projectURL, targetSize, object }) {
+  const [naturalWidth, setNaturalWidth] = useState(1);
+  const [naturalHeight, setNaturalHeight] = useState(1);
+
+  useEffect(() => {
+    if (object.type === "image") {
+      const img = new Image();
+      img.onload = () => {
+        setNaturalWidth(img.naturalWidth);
+        setNaturalHeight(img.naturalHeight);
+      };
+      img.src = `${projectURL}/${object.path}`;
+    }
+  }, [object, projectURL]);
+
+  const aspectRatio = naturalWidth / naturalHeight;
+  const width = object.width * object.scale[0];
+  const height = (object.width / aspectRatio) * object.scale[1];
+
+  let style = `
+    width: ${width}px;
+    height: ${height}px;
+    transform: translate(-50%, -50%);
+  `;
+
   if (object.feather) {
     const featherAmount = 100 - object.feather * 100;
     style += `mask-image: radial-gradient(closest-corner, #000 0, transparent ${featherAmount}%, transparent 100%)`;
   }
+
   let element;
   if (object.type === "image") {
-    element = html`<img src="${projectURL}/${object.path}" style=${style} />`;
+    element = html`<img src="${projectURL}/${object.path}" style="width: 100%; height: 100%; object-fit: cover;" />`;
   } else if (object.type === "video") {
-    element = html`<video src="${projectURL}/${object.path}" style=${style} autoplay muted />`;
+    element = html`<video
+      src="${projectURL}/${object.path}"
+      style="width: 100%; height: 100%; object-fit: cover;"
+      autoplay
+      muted
+      loop
+    />`;
   }
+
   return html`<div
     class="scene-object scene-${object.type}"
-    style="left: ${object.position[0] * 100}%;
-           top: ${object.position[1] * 100}%;
-           "
+    style="
+      left: ${object.position[0]}px;
+      top: ${object.position[1]}px;
+      ${style}
+    "
   >
     ${element}
   </div>`;
 }
 
 function Viewer({ projectURL, scene }) {
-  return html`<div class="viewer">
-    <div class="scene">
-      ${scene.objects.map((o) => html`<${SceneObject} projectURL=${projectURL} scene=${scene} object=${o} />`)}
-    </div>
-  </div>`;
-}
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+  const targetSize = scene.targetSize || [1920, 1080];
 
-function TestImage() {
-  return html`<div class="test-image" />`;
+  useEffect(() => {
+    const updateSize = () => {
+      const container = document.querySelector(".viewer");
+      if (container) {
+        setContainerSize({
+          width: container.clientWidth,
+          height: container.clientHeight,
+        });
+      }
+    };
+
+    window.addEventListener("resize", updateSize);
+    updateSize();
+
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
+
+  const scale = Math.min(containerSize.width / targetSize[0], containerSize.height / targetSize[1]);
+  // Calculate the top and left positions to center the scene
+  const scaledWidth = targetSize[0] * scale;
+  const scaledHeight = targetSize[1] * scale;
+  const left = (containerSize.width - scaledWidth) / 2;
+  const top = (containerSize.height - scaledHeight) / 2;
+  console.log({ containerSize, targetSize, scale });
+
+  const sceneStyle = `
+      top: ${top}px;
+      left: ${left}px;
+      width: ${targetSize[0]}px;
+      height: ${targetSize[1]}px;
+      transform: scale(${scale});
+    `;
+
+  return html`
+    <div class="viewer">
+      <div class="scene" style=${sceneStyle}>
+        ${scene.objects.map(
+          (o) => html`<${SceneObject} projectURL=${projectURL} targetSize=${targetSize} object=${o} />`
+        )}
+      </div>
+    </div>
+  `;
 }
 
 function App() {

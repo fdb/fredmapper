@@ -1,6 +1,6 @@
 import { html, render, useEffect, useState } from "./preact_standalone.module.js";
 
-function SceneObject({ projectURL, targetSize, object }) {
+function SceneObject({ projectURL, targetSize, object, showBounds }) {
   const [naturalWidth, setNaturalWidth] = useState(1);
   const [naturalHeight, setNaturalHeight] = useState(1);
 
@@ -23,9 +23,10 @@ function SceneObject({ projectURL, targetSize, object }) {
     width: ${width}px;
     height: ${height}px;
     transform: translate(-50%, -50%);
+    ${showBounds ? "border: 2px solid red;" : "border: 2px solid transparent;"}
   `;
 
-  if (object.feather) {
+  if (object.feather && !showBounds) {
     const featherAmount = 100 - object.feather * 100;
     style += `mask-image: radial-gradient(closest-corner, #000 0, transparent ${featherAmount}%, transparent 100%)`;
   }
@@ -55,7 +56,7 @@ function SceneObject({ projectURL, targetSize, object }) {
   </div>`;
 }
 
-function Viewer({ projectURL, scene }) {
+function Viewer({ projectURL, scene, showBounds }) {
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const targetSize = scene.targetSize || [1920, 1080];
 
@@ -96,7 +97,13 @@ function Viewer({ projectURL, scene }) {
     <div class="viewer">
       <div class="scene" style=${sceneStyle}>
         ${scene.objects.map(
-          (o) => html`<${SceneObject} projectURL=${projectURL} targetSize=${targetSize} object=${o} />`
+          (o) =>
+            html`<${SceneObject}
+              projectURL=${projectURL}
+              targetSize=${targetSize}
+              object=${o}
+              showBounds=${showBounds}
+            />`
         )}
       </div>
     </div>
@@ -105,6 +112,7 @@ function Viewer({ projectURL, scene }) {
 
 function App() {
   const [fullscreen, setFullscreen] = useState(false);
+  const [showBounds, setShowBounds] = useState(false);
   const [testImage, setTestImage] = useState(false);
   const [projectURL, setProjectURL] = useState(null);
   const [project, setProject] = useState(null);
@@ -127,6 +135,8 @@ function App() {
       document.getElementById("root").requestFullscreen();
     } else if (e.key === "t") {
       setTestImage((testImage) => !testImage);
+    } else if (e.key === "b") {
+      setShowBounds((showBounds) => !showBounds);
     }
   }
 
@@ -138,7 +148,9 @@ function App() {
     return html`<div class="app"><${TestImage} /></div>`;
   }
 
-  return html`<div class="app"><${Viewer} projectURL=${projectURL} scene=${project.scenes[0]} /></div>`;
+  return html`<div class="app">
+    <${Viewer} projectURL=${projectURL} scene=${project.scenes[0]} showBounds=${showBounds} />
+  </div>`;
 }
 
 render(html`<${App} />`, document.getElementById("root"));

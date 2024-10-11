@@ -4,6 +4,11 @@ import { FuseV1Options, FuseVersion } from "@electron/fuses";
 export default {
   packagerConfig: {
     asar: true,
+    osxSign: {
+      optionsForFile: (filePath) => {
+        return { entitlements: "./entitlements.plist" };
+      },
+    },
   },
   rebuildConfig: {},
   makers: [

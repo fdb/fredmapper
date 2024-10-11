@@ -1,0 +1,48 @@
+name: Build and Notarize macOS App
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Electron app
+        run: npm run make
+
+      - name: Prepare for app notarization
+        run: |
+          mkdir -p ~/private_keys
+          echo '${{ secrets.APPLE_API_KEY }}' > ~/private_keys/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8
+
+      - name: Import Code-Signing Certificates
+        uses: apple-actions/import-codesign-certs@v1
+        with:
+          p12-file-base64: ${{ secrets.MACOS_CERTIFICATE }}
+          p12-password: ${{ secrets.MACOS_CERTIFICATE_PWD }}
+
+      - name: Sign and Notarize
+        env:
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_KEY_ISSUER_ID: ${{ secrets.APPLE_API_KEY_ISSUER_ID }}
+        run: |
+          xcrun altool --notarize-app --primary-bundle-id "com.yourcompany.yourapp" --username "${{ secrets.APPLE_ID }}" --password "${{ secrets.APPLE_ID_PASSWORD }}" --file "out/make/zip/darwin/x64/YourApp-darwin-x64-1.0.0.zip"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: macOS-app
+          path: out/make/zip/darwin/x64/YourApp-darwin-x64-1.0.0.zip

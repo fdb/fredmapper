@@ -32,7 +32,16 @@ function SceneObject({ projectURL, targetSize, object, showBounds }) {
   }
 
   let element;
-  if (object.type === "image") {
+  if (showBounds) {
+    element = html`<div
+      class=""
+      style="
+        width: 100%;
+        height: 100%;
+        background:  red; 
+      "
+    />`;
+  } else if (object.type === "image") {
     element = html`<img src="${projectURL}/${object.path}" style="width: 100%; height: 100%; object-fit: cover;" />`;
   } else if (object.type === "video") {
     element = html`<video

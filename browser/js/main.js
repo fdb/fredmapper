@@ -119,6 +119,10 @@ function Viewer({ projectURL, scene, showBounds }) {
   `;
 }
 
+function TestImage() {
+  return html`<div class="test-image" />`;
+}
+
 function App() {
   const [fullscreen, setFullscreen] = useState(false);
   const [showBounds, setShowBounds] = useState(false);
